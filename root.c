@@ -1,18 +1,20 @@
 #include <stdio.h>
 #include "root.h"
+#include "math_float.h"
 
-static int showIterations = 0;
+/* Iterations flag status */
+static int displayIterations = 0;
 
 void setShowIterations(int flag) {
-    showIterations = flag;
+    displayIterations = flag;
 }
 
+/* math functions */
 double absVal(double x) {
     return (x < 0) ? -x : x;
 }
 
 int dEquals(double a, double b) {
-    /* since a == b ? does not work on floats */
     return (a - b) < EPSILON && (b - a) < EPSILON;
 }
 
@@ -24,18 +26,19 @@ double power(double x, int n) {
     }
     return result;
 }
+/* end math functions */
 
 float rootf(float number) {
-    return (float) nRoot(number, 2);
-}
-double rootd(double number) {
-    return nRoot(number, 2);
+    return nRoot_float(number, 2, EPSFLOAT);
 }
 
-double nRoot(double number, int root) {
-    double x = number;
-    double next = 0;
-    double delta = 0;
+double rootd(double number) {
+    return nRoot(number, 2, EPSDOUBLE);
+}
+
+
+double nRoot(double number, int root, double EPS) {
+    double x = number, next = 0, delta = 0;
     int iteration = 0;
 
     if (dEquals(number, 0) || dEquals(number, 1)) return number;
@@ -47,16 +50,42 @@ double nRoot(double number, int root) {
         /* end newtons formula */
 
         delta = absVal(next - x);
-
-        if(delta < EPSDOUBLE) {
+        if(delta < EPS) {
             return next;
         }
 
         iteration++;
-
-        if(showIterations){
+        if(displayIterations){
             printf("Iteration %d: Approx = %.12f, Error = %.12f\n", iteration, x, delta);
         }
         x = next;
     }
 }
+
+
+
+float nRoot_float(float number, int root, float EPS) {
+    float x = number, next = 0, delta = 0;
+    int iteration = 0;
+
+    if (dEquals_float(number, 0) || dEquals_float(number, 1)) return number;
+    if (root < 0) return -1;
+
+    while (1) {
+        /* newtons formula */
+        next = x - ((power_float(x, root) - number) / ((float) root * power_float(x,root-1)));
+        /* end newtons formula */
+
+        delta = absVal_float(next - x);
+        if(delta < EPS) {
+            return next;
+        }
+
+        iteration++;
+        if(displayIterations){
+            printf("Iteration %d: Approx = %.12f, Error = %.12f\n", iteration, x, delta);
+        }
+        x = next;
+    }
+}
+

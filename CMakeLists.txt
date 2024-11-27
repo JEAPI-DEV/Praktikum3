@@ -6,4 +6,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c89 -Werror -pedantic -Wextra -pe
 
 
 add_executable(Praktikum3 main.c
-        root.c)
+        root.c
+        math_float.h
+        math_flaot.c)
